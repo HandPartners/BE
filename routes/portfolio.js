@@ -48,7 +48,7 @@ const uploadImg = multer({
   },
 });
 
-// 포트폴리오 새로 만들기
 router.post('/new', uploadImg.single('logo'), controller.createPortfolio);
+router.patch('/:id', uploadImg.single('logo'), controller.updatePortfolio);
 
 module.exports = router;
