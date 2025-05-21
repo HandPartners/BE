@@ -1,69 +1,69 @@
-const { DataTypes } = require("sequelize");
+const { DataTypes } = require('sequelize');
 
 const News = (sequelize) => {
   const model = sequelize.define(
-    "news",
+    'news',
     {
       id: {
         type: DataTypes.BIGINT,
         allowNull: false,
         primaryKey: true,
         autoIncrement: true,
-        comment: "뉴스 pri 키",
+        comment: '뉴스 pri 키',
       },
       category: {
         type: DataTypes.STRING,
         allowNull: false,
-        comment: "카테고리",
+        comment: '카테고리',
       },
       title: {
         type: DataTypes.STRING,
         allowNull: false,
-        comment: "제목",
+        comment: '제목',
       },
       content: {
         type: DataTypes.STRING,
         allowNull: false,
-        comment: "내용",
+        comment: '내용',
       },
       thumbnail: {
         type: DataTypes.STRING,
         allowNull: false,
-        comment: "표지 이미지",
+        comment: '표지 이미지',
       },
       image: {
         type: DataTypes.STRING,
         allowNull: false,
-        comment: "본문 이미지",
+        comment: '본문 이미지',
       },
       shortcut: {
         type: DataTypes.STRING,
         allowNull: false,
-        comment: "바로가기 버튼 이름",
+        comment: '바로가기 버튼 이름',
       },
       link: {
         type: DataTypes.STRING,
         allowNull: false,
-        comment: "바로가기 버튼 링크",
+        comment: '바로가기 버튼 링크',
       },
       visible: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,
-        comment: "노출 여부",
+        comment: '노출 여부',
       },
       createdAt: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
+        defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
       },
     },
     {
-      tableName: "news",
+      tableName: 'news',
       freezeTableName: true,
       timestamps: false,
-      charset: "utf8mb4",
-      collate: "utf8mb4_unicode_ci",
+      charset: 'utf8mb4',
+      collate: 'utf8mb4_unicode_ci',
     }
   );
   return model;

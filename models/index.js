@@ -1,8 +1,8 @@
-"use strict";
+'use strict';
 
-require("dotenv").config();
+require('dotenv').config();
 
-const Sequelize = require("sequelize");
+const Sequelize = require('sequelize');
 const db = {};
 
 const sequelize = new Sequelize(
@@ -12,9 +12,9 @@ const sequelize = new Sequelize(
   {
     host: process.env.DB_HOST,
     dialect: process.env.DB_DIALECT,
-    timezone: "+09:00",
+    timezone: '+09:00',
     dialectOptions: {
-      charset: "utf8mb4",
+      charset: 'utf8mb4',
       dateStrings: true,
       typeCast: true,
     },
@@ -22,8 +22,8 @@ const sequelize = new Sequelize(
 );
 
 // 모델 모듈 불러오기
-const News = require("./News")(sequelize);
-const Portfolio = require("./Portfolio")(sequelize);
+const News = require('./News')(sequelize);
+const Portfolio = require('./Portfolio')(sequelize);
 
 // 모델 DB 객체에 저장
 db.News = News;

@@ -1,12 +1,12 @@
-const express = require("express");
+const express = require('express');
 const app = express();
 const PORT = 8080;
-const { sequelize } = require("./models");
-const http = require("http");
+const { sequelize } = require('./models');
+const http = require('http');
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+// 포트폴리오
+const portfolioRouter = require('./routes/portfolio');
+app.use('/portfolio', portfolioRouter);
 
 /// 서버 실행
 sequelize.sync({ force: false }).then(() => {
