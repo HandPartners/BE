@@ -19,9 +19,9 @@ const uploadImg = multer({
       if (month < 10) month = '0' + month;
       if (day < 10) day = '0' + day;
 
-      const isExist = fs.existsSync(`uploads/${year}${month}${day}/logo`); // uploads/YYYYMMDD 폴더가 있는지 확인
+      const isExist = fs.existsSync(`uploads/${year}${month}${day}`); // uploads/YYYYMMDD 폴더가 있는지 확인
 
-      const folderName = path.join(`uploads/${year}${month}${day}/logo`, '/'); // 폴더명은 'uploads/YYYYMMDD'의 형식
+      const folderName = path.join(`uploads/${year}${month}${day}`, '/'); // 폴더명은 'uploads/YYYYMMDD'의 형식
 
       if (!isExist) {
         // 만약 YYYYMMDD 폴더가 존재하지 않으면 폴더를 새로 생성
@@ -47,10 +47,3 @@ const uploadImg = multer({
     fileSize: 50 * 1024 * 1024, // 파일 최대 사이즈 : 50MB
   },
 });
-
-router.get('/', controller.getPortfolioList);
-router.post('/new', uploadImg.single('logo'), controller.createPortfolio);
-router.patch('/:id', uploadImg.single('logo'), controller.updatePortfolio);
-router.delete('/:id', controller.deletePortfolio);
-
-module.exports = router;

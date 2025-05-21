@@ -1,5 +1,5 @@
 const { Portfolio, sequelize } = require('../models');
-const { checkFile } = require('../utils/fileUtil');
+const { LogoCheckFile } = require('../utils/fileUtil');
 const { PortfolioCategory } = require('../models/enum/portfolioCategory.enum');
 const fs = require('fs').promises;
 const { Op } = require('sequelize');
@@ -9,6 +9,10 @@ exports.getPortfolioList = async (req, res) => {
   try {
     const { category, name } = req.query;
     let { pageNum } = req.query;
+
+    // 카테고리 검증
+    if (category && !Object.values(PortfolioCategory).includes(category))
+      return res.status(400).json({ error: '유효하지 않은 카테고리입니다.' });
 
     pageNum = parseInt(pageNum) || 1; // 페이지 번호 기본값 1
     const pageSize = 15; // 페이지당 데이터 개수
@@ -70,7 +74,7 @@ exports.createPortfolio = async (req, res) => {
     }
 
     // 파일 체크
-    const filePath = checkFile(req.file);
+    const filePath = LogoCheckFile(req.file);
 
     await Portfolio.create(
       {
@@ -154,7 +158,7 @@ exports.updatePortfolio = async (req, res) => {
     }
 
     // 파일 체크
-    const filePath = checkFile(req.file);
+    const filePath = LogoCheckFile(req.file);
 
     await Portfolio.update(
       {
