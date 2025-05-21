@@ -62,9 +62,7 @@ exports.createPortfolio = async (req, res) => {
     // 파일 삭제
     if (req.file) await fs.unlink(req.file.path);
 
-    res
-      .status(500)
-      .send({ error: 'Internal server error', message: error.message });
+    res.status(500).send({ error: 'Internal server error' });
   }
 };
 
@@ -154,8 +152,32 @@ exports.updatePortfolio = async (req, res) => {
       await fs.unlink(req.file.path);
     }
 
-    res
-      .status(500)
-      .send({ error: 'Internal server error', message: error.message });
+    res.status(500).send({ error: 'Internal server error' });
+  }
+};
+
+// 포트폴리오 삭제
+exports.deletePortfolio = async (req, res) => {
+  try {
+    const portfolioId = req.params.id;
+
+    const portfolio = await Portfolio.findByPk(portfolioId);
+
+    if (!portfolio)
+      return res.status(404).json({ error: '포트폴리오를 찾을 수 없습니다.' });
+
+    if (portfolio.logo) {
+      const oldFilePath = `uploads/${portfolio.logo}`;
+      await fs.unlink(oldFilePath);
+    }
+
+    await Portfolio.destroy({
+      where: { id: portfolioId },
+    });
+
+    res.send({ success: true });
+  } catch {
+    console.error(err);
+    res.status(500).send('Internal server error');
   }
 };
