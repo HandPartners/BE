@@ -19,26 +19,27 @@ const uploadImg = multer({
       if (month < 10) month = '0' + month;
       if (day < 10) day = '0' + day;
 
-      const isExist = fs.existsSync(`uploads/${year}${month}${day}/logo`); // uploads/YYYYMMDD 폴더가 있는지 확인
-
-      const folderName = path.join(`uploads/${year}${month}${day}/logo`, '/'); // 폴더명은 'uploads/YYYYMMDD'의 형식
-
-      if (!isExist) {
-        // 만약 YYYYMMDD 폴더가 존재하지 않으면 폴더를 새로 생성
-        fs.mkdirSync(folderName, { recursive: true });
+      const dir = `uploads/${year}${month}${day}/logo`;
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
       }
 
-      callback(null, folderName); // 이미지 업로드 폴더 경로 설정
+      callback(null, dir); // 이미지 업로드 폴더 경로 설정
     },
     filename(req, file, callback) {
-      file.originalname = Buffer.from(file.originalname, 'latin1').toString(
+      // 한글 파일명 처리 및 특수문자/널바이트 제거
+      let originalName = Buffer.from(file.originalname, 'latin1').toString(
         'utf8'
-      ); // 한글 처리 // 로컬에서는 주석 풀고 실행해야함
+      );
+      originalName = originalName
+        .replace(/\0/g, '')
+        .replace(/[^\w.\-가-힣]/g, '');
 
       const random = Math.trunc(Math.random() * Math.pow(10, 15)); // 임의의 15자리 숫자를 가지고 온다.
       const ext = path.extname(file.originalname); // 확장자 추출
+      const base = path.basename(originalName, ext);
 
-      fileName = path.basename(file.originalname, ext) + random + ext; // 파일명
+      fileName = base + random + ext; // 파일명
       // Ex) apple.png → apple40195724.png
       callback(null, fileName); // 업로드할 이미지의 파일명 설정
     },

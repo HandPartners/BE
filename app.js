@@ -3,10 +3,31 @@ const app = express();
 const PORT = 8080;
 const { sequelize } = require('./models');
 const http = require('http');
+const multer = require('multer');
 
 // 포트폴리오
 const portfolioRouter = require('./routes/portfolio');
 app.use('/portfolio', portfolioRouter);
+
+// 뉴스
+const newsRouter = require('./routes/news');
+app.use('/news', newsRouter);
+
+// Multer 에러 및 기타 에러 핸들러
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    // 썸네일 개수 초과 등 multer 관련 에러 처리
+    if (err.code === 'LIMIT_UNEXPECTED_FILE' && err.field === 'thumbnail') {
+      return res
+        .status(400)
+        .json({ error: '표지 이미지는 1개만 업로드 가능합니다.' });
+    }
+    // 기타 multer 에러
+    return res.status(400).json({ error: err.message });
+  }
+  // 그 외 에러
+  res.status(500).json({ error: 'Internal server error' });
+});
 
 /// 서버 실행
 sequelize.sync({ force: false }).then(() => {

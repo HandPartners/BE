@@ -1,5 +1,5 @@
 const { Portfolio, sequelize } = require('../models');
-const { LogoCheckFile } = require('../utils/fileUtil');
+const { logoCheckFile } = require('../utils/fileUtil');
 const { PortfolioCategory } = require('../models/enum/portfolioCategory.enum');
 const fs = require('fs').promises;
 const { Op } = require('sequelize');
@@ -74,7 +74,7 @@ exports.createPortfolio = async (req, res) => {
     }
 
     // 파일 체크
-    const filePath = LogoCheckFile(req.file);
+    const filePath = logoCheckFile(req.file);
 
     await Portfolio.create(
       {
@@ -158,7 +158,7 @@ exports.updatePortfolio = async (req, res) => {
     }
 
     // 파일 체크
-    const filePath = LogoCheckFile(req.file);
+    const filePath = logoCheckFile(req.file);
 
     await Portfolio.update(
       {

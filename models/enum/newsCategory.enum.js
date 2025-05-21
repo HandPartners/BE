@@ -9,4 +9,4 @@ const NewsCategory = {
 
 Object.freeze(NewsCategory);
 
-export default NewsCategory;
+module.exports = { NewsCategory };
