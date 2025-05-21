@@ -48,6 +48,7 @@ const uploadImg = multer({
   },
 });
 
+router.get('/', controller.getPortfolioList);
 router.post('/new', uploadImg.single('logo'), controller.createPortfolio);
 router.patch('/:id', uploadImg.single('logo'), controller.updatePortfolio);
 router.delete('/:id', controller.deletePortfolio);

@@ -2,6 +2,37 @@ const { Portfolio, sequelize } = require('../models');
 const { checkFile } = require('../utils/fileUtil');
 const { PortfolioCategory } = require('../models/enum/portfolioCategory.enum');
 const fs = require('fs').promises;
+const { Op } = require('sequelize');
+
+// 포트폴리오 조회
+exports.getPortfolioList = async (req, res) => {
+  try {
+    const { category, name } = req.query;
+    let { pageNum } = req.query;
+
+    pageNum = parseInt(pageNum) || 1; // 페이지 번호 기본값 1
+    const pageSize = 15; // 페이지당 데이터 개수
+
+    const portfolioList = await Portfolio.findAll({
+      attributes: ['id', 'category', 'name', 'content', 'logo'],
+      where: {
+        ...(category && { category }),
+        ...(name && { name: { [Op.like]: `%${name}%` } }),
+      },
+      order: [['createdAt', 'DESC']],
+      offset: (pageNum - 1) * pageSize,
+      limit: pageSize,
+    });
+
+    res.send({
+      success: true,
+      portfolioList,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal server error');
+  }
+};
 
 // 포트폴리오 새로 만들기
 exports.createPortfolio = async (req, res) => {
@@ -176,8 +207,8 @@ exports.deletePortfolio = async (req, res) => {
     });
 
     res.send({ success: true });
-  } catch {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
     res.status(500).send('Internal server error');
   }
 };
