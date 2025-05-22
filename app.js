@@ -4,6 +4,9 @@ const PORT = 8080;
 const { sequelize } = require('./models');
 const http = require('http');
 const multer = require('multer');
+const path = require('path');
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // 포트폴리오
 const portfolioRouter = require('./routes/portfolio');
