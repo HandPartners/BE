@@ -6,6 +6,7 @@ const http = require('http');
 const multer = require('multer');
 const path = require('path');
 
+// 정적 파일 접근
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // 포트폴리오

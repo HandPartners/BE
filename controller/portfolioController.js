@@ -166,11 +166,10 @@ exports.updatePortfolio = async (req, res) => {
         transaction,
       }
     );
+
     await transaction.commit();
 
-    res.send({
-      success: true,
-    });
+    res.send({ success: true });
   } catch (error) {
     console.error(error);
 

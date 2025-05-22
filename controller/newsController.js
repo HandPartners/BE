@@ -147,7 +147,106 @@ exports.createNews = async (req, res) => {
 
 // 뉴스 수정
 exports.updateNews = async (req, res) => {
+  const transaction = await sequelize.transaction();
   try {
+    const newsId = req.params.id;
+    const { category, title, content, shortcut, link, visible } = req.body;
+
+    const thumbnail = req.files?.thumbnail?.[0];
+    const imageFiles = req.files?.image;
+
+    if (!category || !title || !content || !shortcut || !link) {
+      await transaction.rollback();
+
+      // 파일 삭제
+      await deleteUploadedFiles(req.files);
+
+      return res.status(400).json({ error: '모든 필드를 입력해주세요.' });
+    }
+
+    // 썸네일 확인
+    if (!thumbnail) {
+      await transaction.rollback();
+
+      // 파일 삭제
+      await deleteUploadedFiles(req.files);
+
+      return res.status(400).json({ error: '표지 이미지를 업로드 해주세요.' });
+    }
+
+    // 이미지 확인
+    if (!imageFiles) {
+      await transaction.rollback();
+
+      // 파일 삭제
+      await deleteUploadedFiles(req.files);
+
+      return res.status(400).json({ error: '본문 이미지를 업로드 해주세요.' });
+    }
+
+    // 카테고리 확인
+    if (!Object.values(NewsCategory).includes(category)) {
+      await transaction.rollback();
+
+      // 파일 삭제
+      await deleteUploadedFiles(req.files);
+
+      return res.status(400).json({ error: '유효하지 않은 카테고리입니다.' });
+    }
+
+    // 기존 뉴스 정보 조회
+    const news = await News.findByPk(newsId, {
+      transaction,
+    });
+
+    if (!news) {
+      await transaction.rollback();
+
+      // 파일 삭제
+      await deleteUploadedFiles(req.files);
+
+      return res.status(404).json({ error: '뉴스를 찾을 수 없습니다.' });
+    }
+
+    // 기존 썸네일 파일 삭제
+    if (news.thumbnail) {
+      const oldFilePath = `uploads/${news.thumbnail}`;
+      await fs.unlink(oldFilePath);
+    }
+
+    // 기존 이미지 파일 삭제
+    if (news.image) {
+      const imageFiles = JSON.parse(news.image);
+      for (const filePath of imageFiles) {
+        const oldFilePath = `uploads/${filePath}`;
+        await fs.unlink(oldFilePath);
+      }
+    }
+
+    // 파일 체크
+    const thumbnailPath = newsCheckFile(thumbnail);
+    const imagePath = newsCheckFiles(imageFiles);
+
+    await News.update(
+      {
+        category,
+        title,
+        content,
+        thumbnail: thumbnailPath,
+        image: imagePath,
+        shortcut,
+        link,
+        visible: visible === 'true' ? true : false,
+      },
+      {
+        where: { id: newsId },
+        transaction,
+      }
+    );
+
+    await transaction.commit();
+
+    res.send({ success: true });
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal server error');
@@ -159,19 +258,19 @@ exports.deleteNews = async (req, res) => {
   try {
     const newsId = req.params.id;
 
-    const newsDetail = await News.findByPk(newsId);
+    const news = await News.findByPk(newsId);
 
-    if (!newsDetail) {
+    if (!news) {
       return res.status(404).json({ error: '뉴스를 찾을 수 없습니다.' });
     }
 
-    if (newsDetail.thumbnail) {
-      const oldFilePath = `uploads/${newsDetail.thumbnail}`;
+    if (news.thumbnail) {
+      const oldFilePath = `uploads/${news.thumbnail}`;
       await fs.unlink(oldFilePath);
     }
 
-    if (newsDetail.image) {
-      const imageFiles = JSON.parse(newsDetail.image);
+    if (news.image) {
+      const imageFiles = JSON.parse(news.image);
       for (const filePath of imageFiles) {
         const oldFilePath = `uploads/${filePath}`;
         await fs.unlink(oldFilePath);
