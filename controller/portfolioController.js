@@ -8,14 +8,10 @@ const { Op } = require('sequelize');
 exports.getPortfolioList = async (req, res) => {
   try {
     const { category, name } = req.query;
-    let { pageNum } = req.query;
 
     // 카테고리 검증
     if (category && !Object.values(PortfolioCategory).includes(category))
       return res.status(400).json({ error: '유효하지 않은 카테고리입니다.' });
-
-    pageNum = parseInt(pageNum) || 1; // 페이지 번호 기본값 1
-    const pageSize = 15; // 페이지당 데이터 개수
 
     const portfolioList = await Portfolio.findAll({
       attributes: ['id', 'category', 'name', 'content', 'logo'],
@@ -24,8 +20,6 @@ exports.getPortfolioList = async (req, res) => {
         ...(name && { name: { [Op.like]: `%${name}%` } }),
       },
       order: [['createdAt', 'DESC']],
-      offset: (pageNum - 1) * pageSize,
-      limit: pageSize,
     });
 
     res.send({
