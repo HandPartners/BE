@@ -11,6 +11,38 @@ const { Op } = require('sequelize');
 // 뉴스 조회
 exports.getNewsList = async (req, res) => {
   try {
+    const { category, title } = req.query;
+    let { pageNum } = req.query;
+
+    // 카테고리 검증
+    if (category && !Object.values(NewsCategory).includes(category))
+      return res.status(400).json({ error: '유효하지 않은 카테고리입니다.' });
+
+    pageNum = parseInt(pageNum) || 1; // 페이지 번호 기본값 1
+    const pageSize = 3; // 페이지당 데이터 개수
+
+    const newsList = await News.findAll({
+      attributes: [
+        'id',
+        'category',
+        'thumbnail',
+        'title',
+        'content',
+        'createdAt',
+      ],
+      where: {
+        ...(category && { category }),
+        ...(title && { title: { [Op.like]: `%${title}%` } }),
+      },
+      order: [['createdAt', 'DESC']],
+      offset: (pageNum - 1) * pageSize,
+      limit: pageSize,
+    });
+
+    res.send({
+      success: true,
+      newsList,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal server error');
