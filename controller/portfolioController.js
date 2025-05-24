@@ -166,9 +166,7 @@ exports.updatePortfolio = async (req, res) => {
     if (transaction) await transaction.rollback();
 
     // 파일 삭제
-    if (req.file) {
-      await fs.unlink(req.file.path);
-    }
+    if (req.file) await fs.unlink(req.file.path);
 
     res.status(500).send({ error: 'Internal server error' });
   }
