@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const PORT = 8080;
+const cors = require('cors');
 const { sequelize } = require('./models');
 const http = require('http');
 const multer = require('multer');
