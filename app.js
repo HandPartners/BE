@@ -57,8 +57,8 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-app.get('*', (req, res) => {
-  res.send('404');
+app.use((req, res) => {
+  res.status(404).json({ error: 'Not Found' });
 });
 
 /// 서버 실행
