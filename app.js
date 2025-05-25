@@ -6,6 +6,19 @@ const http = require('http');
 const multer = require('multer');
 const path = require('path');
 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  })
+);
+
+// express 애플리케이션에 프록시 서버를 믿을 수 있다고 알려주는 것
+// express는 요청 헤더의 X-Forwarded-Proto 값을 사용하여 원래 프로토콜을 복원
+app.set('trust proxy', true); // 로드밸런서가 있을 경우 사용
+
 // 정적 파일 접근
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -41,6 +54,10 @@ app.use((err, req, res, next) => {
   }
   // 그 외 에러
   res.status(500).json({ error: 'Internal server error' });
+});
+
+app.get('*', (req, res) => {
+  res.send('404');
 });
 
 /// 서버 실행
