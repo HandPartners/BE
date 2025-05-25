@@ -13,7 +13,7 @@ const News = (sequelize) => {
       },
       category: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
         comment: '카테고리',
       },
       title: {
@@ -28,22 +28,22 @@ const News = (sequelize) => {
       },
       thumbnail: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
         comment: '표지 이미지',
       },
       image: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
         comment: '본문 이미지',
       },
       shortcut: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
         comment: '바로가기 버튼 이름',
       },
       link: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
         comment: '바로가기 버튼 링크',
       },
       visible: {

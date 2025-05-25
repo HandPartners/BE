@@ -79,7 +79,7 @@ exports.createNews = async (req, res) => {
     const thumbnail = req.files?.thumbnail?.[0];
     const imageFiles = req.files?.image;
 
-    if (!category || !title || !content || !shortcut || !link) {
+    if (!title || !content) {
       await transaction.rollback();
 
       // 파일 삭제
@@ -88,28 +88,8 @@ exports.createNews = async (req, res) => {
       return res.status(400).json({ error: '모든 필드를 입력해주세요.' });
     }
 
-    // 썸네일 확인
-    if (!thumbnail) {
-      await transaction.rollback();
-
-      // 파일 삭제
-      await deleteUploadedFiles(req.files);
-
-      return res.status(400).json({ error: '표지 이미지를 업로드 해주세요.' });
-    }
-
-    // 이미지 확인
-    if (!imageFiles) {
-      await transaction.rollback();
-
-      // 파일 삭제
-      await deleteUploadedFiles(req.files);
-
-      return res.status(400).json({ error: '본문 이미지를 업로드 해주세요.' });
-    }
-
     // 카테고리 확인
-    if (!Object.values(NewsCategory).includes(category)) {
+    if (category && !Object.values(NewsCategory).includes(category)) {
       await transaction.rollback();
 
       // 파일 삭제
@@ -122,19 +102,18 @@ exports.createNews = async (req, res) => {
     const thumbnailPath = newsCheckFile(thumbnail);
     const imagePath = newsCheckFiles(imageFiles);
 
-    await News.create(
-      {
-        category,
-        title,
-        content,
-        thumbnail: thumbnailPath,
-        image: imagePath,
-        shortcut,
-        link,
-        visible: visible === 'true' ? true : false,
-      },
-      { transaction }
-    );
+    const newsData = {
+      ...(category && { category }),
+      title,
+      content,
+      ...(shortcut && { shortcut }),
+      ...(link && { link }),
+      visible: visible === 'true' ? true : false,
+      ...(thumbnail && { thumbnail: thumbnailPath }),
+      ...(imageFiles && { image: imagePath }),
+    };
+
+    await News.create(newsData, { transaction });
 
     await transaction.commit();
 
@@ -145,7 +124,7 @@ exports.createNews = async (req, res) => {
   }
 };
 
-// 뉴스 수정
+// 뉴스 수정 불러오기
 exports.getNewsUpdate = async (req, res) => {
   try {
     const newsId = req.params.id;
@@ -201,15 +180,12 @@ exports.updateNews = async (req, res) => {
     }
 
     // 수정할 값만 객체에 담기
-    if (category) {
-      // 카테고리 검증
-      if (!Object.values(NewsCategory).includes(category)) {
-        await transaction.rollback();
+    if (category && !Object.values(NewsCategory).includes(category)) {
+      await transaction.rollback();
 
-        // 파일 삭제
-        await deleteUploadedFiles(req.files);
-        return res.status(400).json({ error: '유효하지 않은 카테고리입니다.' });
-      }
+      // 파일 삭제
+      await deleteUploadedFiles(req.files);
+      return res.status(400).json({ error: '유효하지 않은 카테고리입니다.' });
     }
 
     const updateData = {
