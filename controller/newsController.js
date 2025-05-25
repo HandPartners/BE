@@ -146,6 +146,39 @@ exports.createNews = async (req, res) => {
 };
 
 // 뉴스 수정
+exports.getNewsUpdate = async (req, res) => {
+  try {
+    const newsId = req.params.id;
+
+    const news = await News.findByPk(newsId, {
+      attributes: [
+        'category',
+        'title',
+        'createdAt',
+        'content',
+        'thumbnail',
+        'image',
+        'shortcut',
+        'link',
+        'visible',
+      ],
+    });
+
+    if (!news) {
+      return res.status(404).json({ error: '뉴스를 찾을 수 없습니다.' });
+    }
+
+    res.send({
+      success: true,
+      news,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal server error');
+  }
+};
+
+// 뉴스 수정
 exports.updateNews = async (req, res) => {
   const transaction = await sequelize.transaction();
   try {

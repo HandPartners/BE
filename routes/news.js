@@ -59,6 +59,7 @@ router.post(
   ]),
   controller.createNews
 );
+router.get('/update/:id', controller.getNewsUpdate);
 router.patch(
   '/:id',
   uploadImg.fields([
