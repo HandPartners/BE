@@ -162,7 +162,8 @@ exports.updateNews = async (req, res) => {
   const transaction = await sequelize.transaction();
   try {
     const newsId = req.params.id;
-    const { category, title, content, shortcut, link, visible } = req.body;
+    const { category, title, content, shortcut, link, visible, keepImages } =
+      req.body;
 
     const thumbnail = req.files?.thumbnail?.[0];
     const imageFiles = req.files?.image;
@@ -177,6 +178,35 @@ exports.updateNews = async (req, res) => {
       // 파일 삭제
       await deleteUploadedFiles(req.files);
       return res.status(404).json({ error: '뉴스를 찾을 수 없습니다.' });
+    }
+
+    // 기존 이미지 목록
+    let prevImages = [];
+    if (news.image) {
+      prevImages = JSON.parse(news.image);
+    }
+
+    // 프론트에서 유지할 이미지 목록(문자열로 오면 피싱)
+    let keepImagesArr = [];
+    if (keepImages) {
+      keepImagesArr =
+        typeof keepImages === 'string' ? JSON.parse(keepImages) : keepImages;
+    }
+
+    // 삭제할 이미지 = 기존 이미지 - 유지할 이미지
+    const deleteImages = prevImages.filter(
+      (img) => !keepImagesArr?.includes(img)
+    );
+    for (const filePath of deleteImages) {
+      const oldFilePath = `uploads/${filePath}`;
+      await fs.unlink(oldFilePath);
+    }
+
+    // 최종 이미지 목록 = 유지할 이미지 + 새로 업로드한 이미지
+    let finalImages = [...keepImagesArr];
+    if (imageFiles) {
+      const newImagePaths = JSON.parse(newsCheckFiles(imageFiles));
+      finalImages = finalImages.concat(newImagePaths);
     }
 
     // 수정할 값만 객체에 담기
@@ -195,6 +225,7 @@ exports.updateNews = async (req, res) => {
       ...(shortcut && { shortcut }),
       ...(link && { link }),
       ...(visible !== undefined && { visible: visible === 'true' }),
+      image: JSON.stringify(finalImages),
     };
 
     // 파일이 넘어온 경우 기존 파일 삭제 및 새 파일 경로 저장
@@ -206,19 +237,6 @@ exports.updateNews = async (req, res) => {
       }
 
       updateData.thumbnail = newsCheckFile(thumbnail);
-    }
-
-    if (imageFiles) {
-      // 기존 이미지 파일 삭제
-      if (news.image) {
-        const imageFiles = JSON.parse(news.image);
-        for (const filePath of imageFiles) {
-          const oldFilePath = `uploads/${filePath}`;
-          await fs.unlink(oldFilePath);
-        }
-      }
-
-      updateData.image = newsCheckFiles(imageFiles);
     }
 
     // 아무 값도 넘어오지 않은 경우
