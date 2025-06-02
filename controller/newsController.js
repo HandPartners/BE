@@ -4,9 +4,11 @@ const {
   newsCheckFiles,
   deleteUploadedFiles,
 } = require('../utils/fileUtil');
+const { getByteLength } = require('../utils/lengthUtil');
 const { NewsCategory } = require('../models/enum/newsCategory.enum');
 const fs = require('fs').promises;
 const { Op } = require('sequelize');
+const { get } = require('http');
 
 // 뉴스 조회
 exports.getNewsList = async (req, res) => {
@@ -96,6 +98,30 @@ exports.createNews = async (req, res) => {
       await deleteUploadedFiles(req.files);
 
       return res.status(400).json({ error: '유효하지 않은 카테고리입니다.' });
+    }
+
+    if (getByteLength(title) > 255) {
+      await transaction.rollback();
+      await deleteUploadedFiles(req.files);
+      return res
+        .status(400)
+        .json({ error: '제목은 127자 이내로 입력해주세요.' });
+    }
+
+    if (getByteLength(content) > 30000) {
+      await transaction.rollback();
+      await deleteUploadedFiles(req.files);
+      return res
+        .status(400)
+        .json({ error: '내용은 10000자 이내로 입력해주세요.' });
+    }
+
+    if (getByteLength(shortcut) > 255) {
+      await transaction.rollback();
+      await deleteUploadedFiles(req.files);
+      return res
+        .status(400)
+        .json({ error: '바로가기 버튼 이름은 127자 이내로 입력해주세요.' });
     }
 
     // 파일 체크
@@ -216,6 +242,30 @@ exports.updateNews = async (req, res) => {
       // 파일 삭제
       await deleteUploadedFiles(req.files);
       return res.status(400).json({ error: '유효하지 않은 카테고리입니다.' });
+    }
+
+    if (getByteLength(title) > 255) {
+      await transaction.rollback();
+      await deleteUploadedFiles(req.files);
+      return res
+        .status(400)
+        .json({ error: '제목은 127자 이내로 입력해주세요.' });
+    }
+
+    if (getByteLength(content) > 30000) {
+      await transaction.rollback();
+      await deleteUploadedFiles(req.files);
+      return res
+        .status(400)
+        .json({ error: '내용은 10000자 이내로 입력해주세요.' });
+    }
+
+    if (getByteLength(shortcut) > 255) {
+      await transaction.rollback();
+      await deleteUploadedFiles(req.files);
+      return res
+        .status(400)
+        .json({ error: '바로가기 버튼 이름은 127자 이내로 입력해주세요.' });
     }
 
     const updateData = {
