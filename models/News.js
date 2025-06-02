@@ -32,7 +32,7 @@ const News = (sequelize) => {
         comment: '표지 이미지',
       },
       image: {
-        type: DataTypes.TEXT,
+        type: DataTypes.TEXT('medium'),
         allowNull: true,
         comment: '본문 이미지',
       },
