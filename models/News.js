@@ -22,7 +22,7 @@ const News = (sequelize) => {
         comment: '제목',
       },
       content: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false,
         comment: '내용',
       },
