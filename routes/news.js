@@ -55,7 +55,8 @@ router.post(
   '/new',
   uploadImg.fields([
     { name: 'thumbnail', maxCount: 1 },
-    { name: 'image', maxCount: 10 },
+    // { name: 'image', maxCount: 10 },
+    { name: 'image' },
   ]),
   controller.createNews
 );

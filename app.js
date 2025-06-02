@@ -45,11 +45,11 @@ app.use((err, req, res, next) => {
         .json({ error: '표지 이미지는 1개만 업로드 가능합니다.' });
     }
     // 썸네일 개수 초과 등 multer 관련 에러 처리
-    if (err.code === 'LIMIT_UNEXPECTED_FILE' && err.field === 'image') {
-      return res
-        .status(400)
-        .json({ error: '본문 이미지는 10개까지 업로드 가능합니다.' });
-    }
+    // if (err.code === 'LIMIT_UNEXPECTED_FILE' && err.field === 'image') {
+    //   return res
+    //     .status(400)
+    //     .json({ error: '본문 이미지는 10개까지 업로드 가능합니다.' });
+    // }
     // 기타 multer 에러
     return res.status(400).json({ error: err.message });
   }
