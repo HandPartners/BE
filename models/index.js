@@ -24,10 +24,12 @@ const sequelize = new Sequelize(
 // 모델 모듈 불러오기
 const News = require('./News')(sequelize);
 const Portfolio = require('./Portfolio')(sequelize);
+const Program = require('./Program')(sequelize);
 
 // 모델 DB 객체에 저장
 db.News = News;
 db.Portfolio = Portfolio;
+db.Program = Program;
 
 db.sequelize = sequelize;
 

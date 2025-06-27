@@ -27,13 +27,17 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const mainRouter = require('./routes/main');
 app.use('/', mainRouter);
 
-// 포트폴리오
-const portfolioRouter = require('./routes/portfolio');
-app.use('/portfolio', portfolioRouter);
+// // 포트폴리오
+// const portfolioRouter = require('./routes/portfolio');
+// app.use('/portfolio', portfolioRouter);
 
 // 뉴스
 const newsRouter = require('./routes/news');
 app.use('/news', newsRouter);
+
+// 프로그램
+const programRouter = require('./routes/program');
+app.use('/program', programRouter);
 
 // Multer 에러 및 기타 에러 핸들러
 app.use((err, req, res, next) => {
