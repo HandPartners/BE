@@ -3,11 +3,11 @@ const { Portfolio, News, Program } = require('../models');
 // 메인 화면
 exports.getMain = async (req, res) => {
   try {
-    // const portfolioList = await Portfolio.findAll({
-    //   attributes: ['id', 'logo'],
-    //   order: [['createdAt', 'DESC']],
-    //   limit: 15,
-    // });
+    const portfolioList = await Portfolio.findAll({
+      attributes: ['id', 'logo'],
+      order: [['createdAt', 'DESC']],
+      limit: 15,
+    });
 
     const programList = await Program.findAll({
       attributes: [
@@ -37,6 +37,7 @@ exports.getMain = async (req, res) => {
 
     res.send({
       success: true,
+      portfolioList,
       programList,
       newsList,
     });

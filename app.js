@@ -27,9 +27,9 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const mainRouter = require('./routes/main');
 app.use('/', mainRouter);
 
-// // 포트폴리오
-// const portfolioRouter = require('./routes/portfolio');
-// app.use('/portfolio', portfolioRouter);
+// 포트폴리오
+const portfolioRouter = require('./routes/portfolio');
+app.use('/portfolio', portfolioRouter);
 
 // 뉴스
 const newsRouter = require('./routes/news');
