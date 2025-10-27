@@ -4,6 +4,7 @@ const { PortfolioCategory } = require('../models/enum/portfolioCategory.enum');
 const fs = require('fs').promises;
 const { Op } = require('sequelize');
 
+// 해당 기능을 'Reference'라고 명명 변경필요
 // 포트폴리오 조회
 exports.getPortfolioList = async (req, res) => {
   try {
