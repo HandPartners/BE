@@ -61,9 +61,13 @@ exports.getProgramDetail = async (req, res) => {
       return res.status(404).json({ error: '프로그램을 찾을 수 없습니다.' });
     }
 
-    res.send({
+    const data = programDetail.toJSON();
+
+    data.image = data.image ? JSON.parse(data.image) : [];
+
+    res.json({
       success: true,
-      programDetail,
+      programDetail: data,
     });
   } catch (error) {
     console.error(error);
